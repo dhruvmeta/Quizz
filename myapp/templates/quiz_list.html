@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto py-10">
+  <h2 class="text-3xl font-semibold mb-8 text-center">Available Quizzes</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {% for quiz in quizzes %}
+      <div class="p-6 bg-white shadow rounded-2xl hover:shadow-lg transition">
+        <h3 class="text-xl font-semibold mb-2">{{ quiz.title }}</h3>
+        <p class="text-gray-600 mb-4">{{ quiz.description }}</p>
+        <a href="{% url 'quiz_attempt' quiz.id %}" 
+           class="inline-block px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+          Take Quiz
+        </a>
+      </div>
+    {% empty %}
+      <p class="text-center text-gray-500 col-span-2">No quizzes available yet.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

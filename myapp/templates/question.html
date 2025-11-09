@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Questions</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <div class="max-w-3xl mx-auto py-10">
+    <h1 id="quizTitle" class="text-3xl font-bold mb-8 text-center"></h1>
+    <div id="questions"></div>
+  </div>
+
+  <script>
+    // Get quiz ID from query parameter
+    const params = new URLSearchParams(window.location.search);
+    const quizId = params.get('id');
+    console.log("Quiz ID:", quizId);
+
+    if (!quizId) {
+      document.getElementById('quizTitle').innerText = "Quiz Not Found";
+      document.getElementById('questions').innerHTML = `
+        <p class="text-center text-gray-600">No quiz ID provided in URL.</p>
+      `;
+    } else {
+      // Fetch quiz questions
+      fetch(`http://127.0.0.1:8000/api/questions/${quizId}/`)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('quizTitle').innerText = `Quiz #${quizId}`;
+          const container = document.getElementById('questions');
+
+          if (!Array.isArray(data) || data.length === 0) {
+            container.innerHTML = `
+              <p class="text-center text-gray-600">No questions found for this quiz.</p>
+            `;
+            return;
+          }
+
+          container.innerHTML = data.map(q => `
+            <div class="bg-white p-6 rounded-2xl shadow mb-4">
+              <h2 class="font-semibold mb-2">${q.question_text}</h2>
+              <ul class="list-disc pl-6 text-gray-700">
+                <li>${q.option1}</li>
+                <li>${q.option2}</li>
+                <li>${q.option3}</li>
+                <li>${q.option4}</li>
+              </ul>
+            </div>
+          `).join('');
+        })
+        .catch(err => {
+          console.error('Error fetching questions:', err);
+          document.getElementById('questions').innerHTML = `
+            <p class="text-center text-red-600">Failed to load questions.</p>
+          `;
+        });
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>All Quizzes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <div class="max-w-3xl mx-auto py-10">
+    <h1 class="text-3xl font-bold text-center mb-8">Available Quizzes</h1>
+    <div id="quizList" class="grid gap-6"></div>
+  </div>
+
+  <script>
+    // Fetch all quizzes from backend
+    fetch('http://127.0.0.1:8000/api/quiz/')
+      .then(res => res.json())
+      .then(data => {
+        const quizList = document.getElementById('quizList');
+        
+        if (!Array.isArray(data) || data.length === 0) {
+          quizList.innerHTML = `
+            <p class="text-center text-gray-600">No quizzes available.</p>
+          `;
+          return;
+        }
+
+        // Render quiz cards
+        quizList.innerHTML = data.map(q => `
+          <div class="bg-white p-6 rounded-2xl shadow flex justify-between items-center">
+            <div>
+              <h2 class="text-xl font-semibold">${q.title}</h2>
+              <p class="text-gray-500">${q.description || ''}</p>
+            </div>
+            <a href="question.html?id=${q.id}"
+               class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700">
+              Start Quiz
+            </a>
+          </div>
+        `).join('');
+      })
+      .catch(err => {
+        console.error('Error fetching quizzes:', err);
+        document.getElementById('quizList').innerHTML = `
+          <p class="text-center text-red-600">Failed to load quizzes.</p>
+        `;
+      });
+  </script>
+
+</body>
+</html>

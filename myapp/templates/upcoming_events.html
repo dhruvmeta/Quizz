@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Upcoming Events{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+  <h1 class="text-3xl font-bold text-blue-600 mb-6">Upcoming Events</h1>
+
+  <!-- Event container -->
+  <div id="eventsContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Events will be dynamically added here -->
+  </div>
+
+  <p id="noEvents" class="text-gray-500 text-center mt-12 hidden">
+    No upcoming events available.
+  </p>
+</div>
+
+<script>
+  async function loadUpcomingEvents() {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/events/");
+      if (!res.ok) throw new Error(`Failed to fetch events: ${res.status}`);
+
+      const events = await res.json();
+      const container = document.getElementById("eventsContainer");
+      const noEventsMsg = document.getElementById("noEvents");
+
+      container.innerHTML = "";
+
+      if (!events || events.length === 0) {
+        noEventsMsg.classList.remove("hidden");
+        return;
+      }
+
+      noEventsMsg.classList.add("hidden");
+
+      events.forEach(event => {
+        const div = document.createElement("div");
+        div.className = "bg-white p-4 rounded-lg shadow hover:shadow-lg transition";
+
+        div.innerHTML = `
+          <h2 class="text-xl font-semibold text-gray-800 mb-2">${event.title}</h2>
+          <p class="text-gray-600 mb-2">${event.description.length > 100 ? event.description.substring(0, 100) + "..." : event.description}</p>
+          <p class="text-gray-500 text-sm mb-2">Date: ${new Date(event.date).toLocaleString()}</p>
+          <p class="text-gray-500 text-sm">Location: ${event.location || "N/A"}</p>
+        `;
+        container.appendChild(div);
+      });
+    } catch (error) {
+      console.error("Error loading upcoming events:", error);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", loadUpcomingEvents);
+</script>
+{% endblock %}

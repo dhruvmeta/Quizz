@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}{{ quiz.title }} - Quiz Game{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-10">
+  <div class="bg-white p-6 rounded-2xl shadow">
+    <h2 class="text-2xl font-bold mb-6">{{ quiz.title }}</h2>
+
+    <form id="quiz-form" class="space-y-6">
+      <input type="text" name="user_name" placeholder="Enter your name"
+             class="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+             required>
+
+      <div id="questions-wrapper" class="space-y-6"></div>
+
+      <div class="flex justify-center">
+        <button type="submit"
+                class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          Submit Quiz
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const quizId = {{ quiz.id }};
+const apiUrl = `/api/quiz/${quizId}/questions/`;
+
+async function loadQuestions() {
+  const res = await fetch(apiUrl);
+  const data = await res.json();
+  const wrapper = document.getElementById('questions-wrapper');
+
+  data.questions.forEach((q, index) => {
+    const div = document.createElement('div');
+    div.className = "p-4 border rounded-lg bg-gray-50";
+    div.setAttribute('data-qid', q.id);
+
+    let optionsHTML = "";
+    if (q.options.length > 0) {
+      // Multiple Choice or True/False
+      q.options.forEach((opt, optIndex) => {
+        optionsHTML += `
+          <label class="flex items-center space-x-3 p-2 border rounded-lg hover:bg-gray-100 cursor-pointer">
+            <input type="radio" name="question_${q.id}" value="${opt.text}" class="h-5 w-5 text-blue-600">
+            <span>${opt.text}</span>
+          </label>
+        `;
+      });
+    } else {
+      // Short Answer Question
+      optionsHTML = `
+        <input type="text" name="question_${q.id}" placeholder="Your answer..."
+               class="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+      `;
+    }
+
+    div.innerHTML = `
+      <p class="font-semibold mb-2">Q${index + 1}. ${q.text}</p>
+      <div class="space-y-2">${optionsHTML}</div>
+    `;
+
+    wrapper.appendChild(div);
+  });
+}
+
+document.getElementById('quiz-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const answers = {};
+
+  for (let [key, value] of formData.entries()) {
+    if (key.startsWith('question_')) {
+      const qid = key.split('_')[1];
+      answers[qid] = value;
+    }
+  }
+
+  const user_name = formData.get('user_name');
+
+  try {
+    const res = await fetch(`/api/quiz/${quizId}/submit/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify({ user_name, answers })
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      alert(result.error || "Something went wrong");
+      return;
+    }
+
+    alert(`You scored ${result.score} out of ${result.total_questions}`);
+
+    // Clear previous borders
+    document.querySelectorAll('#questions-wrapper div').forEach(div => {
+      div.style.borderColor = '#e5e7eb';
+    });
+
+    // Highlight each question result
+    if (result.results) {
+      result.results.forEach(r => {
+        const questionDiv = document.querySelector(`#questions-wrapper div[data-qid='${r.question_id}']`);
+        if (questionDiv) {
+          questionDiv.style.borderColor = r.is_correct ? 'green' : 'red';
+          questionDiv.insertAdjacentHTML('beforeend', `
+            <p class="mt-2 font-semibold ${r.is_correct ? 'text-green-600' : 'text-red-600'}">
+              Your answer: ${r.selected_answer} - ${r.is_correct ? 'Correct' : 'Incorrect'}
+            </p>
+          `);
+        }
+      });
+    }
+
+  } catch (err) {
+    console.error("Error submitting quiz:", err);
+    alert("⚠️ Something went wrong. Please try again.");
+  }
+});
+
+loadQuestions();
+</script>
+{% endblock %}

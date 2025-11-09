@@ -1,0 +1,17 @@
+<!-- myapp/templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Quiz App{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <nav class="bg-blue-600 text-white py-4 px-6">Quiz App</nav>
+
+  <main class="container mx-auto mt-6">
+    {% block content %}
+    {% endblock %}
+  </main>
+</body>
+</html>

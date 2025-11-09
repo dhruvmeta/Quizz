@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-3xl mx-auto py-10 text-center">
+  <div class="bg-white p-8 rounded-2xl shadow">
+    <h2 class="text-3xl font-bold mb-4">Your Result</h2>
+    <p class="text-xl mb-6">You scored 
+      <span class="font-semibold text-blue-600">{{ score }}</span> 
+      out of {{ total_questions }}
+    </p>
+
+    <div class="text-left">
+      {% for q in results %}
+        <div class="mb-6 p-4 border rounded-xl {% if q.correct %}bg-green-50{% else %}bg-red-50{% endif %}">
+          <p class="font-medium">{{ forloop.counter }}. {{ q.question.text }}</p>
+          <p class="text-gray-600">Your answer: {{ q.user_answer.text }}</p>
+          <p class="text-gray-600">Correct answer: {{ q.correct_answer.text }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="mt-8">
+      <a href="{% url 'quiz_list' %}" 
+         class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        Try Another Quiz
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

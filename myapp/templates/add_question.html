@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Add Question{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow">
+  <h1 class="text-2xl font-bold text-blue-600 mb-6">Add New Question</h1>
+
+  <form id="questionForm" class="space-y-4">
+    <!-- Quiz Selection -->
+    <div>
+      <label class="block mb-2 font-semibold">Select Quiz</label>
+      <select id="quizSelect" name="quiz" class="w-full border rounded p-2" required>
+        <option value="">Loading quizzes...</option>
+      </select>
+    </div>
+
+    <!-- Question Text -->
+    <div>
+      <label class="block mb-2 font-semibold">Question Text</label>
+      <textarea name="text" id="text" class="w-full border rounded p-2" rows="4" placeholder="Enter question text" required></textarea>
+    </div>
+
+    <!-- Question Type -->
+    <div>
+      <label class="block mb-2 font-semibold">Question Type</label>
+      <select name="question_type" id="questionType" class="w-full border rounded p-2" required>
+        <option value="">-- Select Type --</option>
+        <option value="mcq">Multiple Choice</option>
+        <option value="true_false">True / False</option>
+        <option value="short">Short Answer</option>
+      </select>
+    </div>
+
+    <!-- Submit Button -->
+    <div>
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+        Save Question
+      </button>
+    </div>
+  </form>
+
+  <p id="message" class="mt-4 text-center text-green-600 font-semibold"></p>
+</div>
+
+<script>
+  // 1️⃣ Load quiz list dynamically from API
+  async function loadQuizzes() {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/quiz/"); // Your API endpoint for quizzes
+      if (!res.ok) throw new Error(`Failed to fetch quizzes: ${res.status}`);
+      const quizzes = await res.json();
+
+      const select = document.getElementById('quizSelect');
+      select.innerHTML = '<option value="">-- Select Quiz --</option>'; // clear previous options
+
+      quizzes.forEach(q => {
+        const option = document.createElement('option');
+        option.value = q.id;
+        option.textContent = q.title;
+        select.appendChild(option);
+      });
+    } catch (err) {
+      console.error(err);
+      const select = document.getElementById('quizSelect');
+      select.innerHTML = '<option value="">Failed to load quizzes</option>';
+    }
+  }
+
+  // 2️⃣ Submit form via API
+  document.getElementById('questionForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const quiz = document.getElementById('quizSelect').value;
+    const text = document.getElementById('text').value;
+    const question_type = document.getElementById('questionType').value;
+
+    if (!quiz || !text || !question_type) return alert("Please fill all fields");
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/add_question/", { // Your API endpoint
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if needed
+        },
+        body: JSON.stringify({ quiz, text, question_type })
+      });
+
+      if (!res.ok) throw new Error(`Failed to add question: ${res.status}`);
+      const data = await res.json();
+      console.log("✅ Question added:", data);
+      document.getElementById('message').textContent = "Question added successfully!";
+      document.getElementById('questionForm').reset();
+    } catch (err) {
+      console.error(err);
+      document.getElementById('message').textContent = "Error adding question";
+    }
+  });
+
+  // Load quizzes on page load
+  document.addEventListener('DOMContentLoaded', loadQuizzes);
+</script>
+{% endblock %}

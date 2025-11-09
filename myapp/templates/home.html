@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-center">
+  <h1 class="text-4xl font-bold mb-6">Welcome to the Quiz Game!</h1>
+  <p class="text-lg text-gray-600 mb-8">
+    Test your knowledge and challenge yourself with fun quizzes.
+  </p>
+
+  <!-- Main Quiz Buttons -->
+  <div class="space-x-4 mb-10">
+    <a href="{% url 'quiz_list' %}" 
+       class="px-6 py-3 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition">
+      Start Playing
+    </a>
+
+    <a href="{% url 'quiz_history' %}" 
+       class="px-6 py-3 bg-green-600 text-white rounded-xl shadow hover:bg-green-700 transition">
+      View Quiz History
+    </a>
+
+    <a href="{% url 'add_question' %}" 
+       class="px-6 py-3 bg-yellow-500 text-white rounded-xl shadow hover:bg-yellow-600 transition">
+      Add Question
+    </a>
+  </div>
+
+  <!-- ✅ Login & Signup Buttons -->
+  <div class="space-x-4 mb-6">
+    <a href="{% url 'login' %}" 
+       class="px-6 py-3 bg-purple-600 text-white rounded-xl shadow hover:bg-purple-700 transition">
+      Login
+    </a>
+
+    <a href="{% url 'register' %}" 
+       class="px-6 py-3 bg-pink-600 text-white rounded-xl shadow hover:bg-pink-700 transition">
+      Sign Up
+    </a>
+  </div>
+
+  <!-- 📅 Events Button -->
+  <div>
+    <a href="{% url 'upcoming_events' %}" 
+       class="px-6 py-3 bg-indigo-600 text-white rounded-xl shadow hover:bg-indigo-700 transition">
+      View Upcoming Events
+    </a>
+  </div>
+</div>
+{% endblock %}

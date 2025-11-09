@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz History</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    async function loadHistory() {
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/quiz_history/");
+        if (!res.ok) throw new Error(`Failed: ${res.status}`);
+        const data = await res.json();
+
+        const tableBody = document.querySelector("#historyBody");
+        tableBody.innerHTML = "";
+
+        if (!data || data.length === 0) {
+          tableBody.innerHTML = `<tr>
+            <td colspan="4" class="text-center py-4 text-gray-500">No quiz history available.</td>
+          </tr>`;
+          return;
+        }
+
+        data.forEach(item => {
+          const row = document.createElement("tr");
+          row.className = "bg-white hover:bg-gray-50 transition-colors";
+          row.innerHTML = `
+            <td class="py-3 px-4 font-medium text-gray-800">${item.user_name}</td>
+            <td class="py-3 px-4 text-blue-600 font-semibold">${item.quiz}</td>
+            <td class="py-3 px-4 text-green-600 font-bold">${item.score}</td>
+            {% comment %} <td class="py-3 px-4 text-gray-500">${new Date(item.submitted_at).toLocaleString()}</td> {% endcomment %}
+          `;
+          tableBody.appendChild(row);
+        });
+
+      } catch (err) {
+        console.error(err);
+        document.querySelector("#historyBody").innerHTML = `<tr>
+          <td colspan="4" class="text-center py-4 text-red-500">Failed to load history.</td>
+        </tr>`;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadHistory);
+  </script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="container mx-auto py-10">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Quiz History</h1>
+    <div class="overflow-x-auto bg-white shadow rounded-lg">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="py-3 px-4 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">User Name</th>
+            <th class="py-3 px-4 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Quiz</th>
+            <th class="py-3 px-4 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Score</th>
+            {% comment %} <th class="py-3 px-4 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Submitted At</th> {% endcomment %}
+          </tr>
+        </thead>
+        <tbody id="historyBody" class="divide-y divide-gray-200">
+          <tr><td colspan="4" class="text-center py-4 text-gray-400">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
