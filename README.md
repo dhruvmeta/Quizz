@@ -1,3 +1,9 @@
+live on render ✔
+
+https://quizz-1300.onrender.com
+
+after hosting on render i got some error so now finding and solve 
+
  Features
  
  Quiz Section
