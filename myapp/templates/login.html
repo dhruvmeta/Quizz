@@ -47,7 +47,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
   message.className = "mt-4 text-center text-blue-600";
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/login/", {
+    const response = await fetch("api/login/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -59,7 +59,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     const data = await response.json();
 
     if (response.ok) {
-      message.textContent = "✅ Login successful! Redirecting...";
+      message.textContent = " Login successful! Redirecting...";
       message.className = "mt-4 text-center text-green-600";
       
       // Store token if your API returns it
@@ -72,12 +72,12 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         window.location.href = "/";
       }, 1500);
     } else {
-      message.textContent = data.error || "❌ Invalid credentials.";
+      message.textContent = data.error || " Invalid credentials.";
       message.className = "mt-4 text-center text-red-600";
     }
   } catch (error) {
     console.error("Login error:", error);
-    message.textContent = "❌ Server error. Please try again later.";
+    message.textContent = " Server error. Please try again later.";
     message.className = "mt-4 text-center text-red-600";
   }
 });
