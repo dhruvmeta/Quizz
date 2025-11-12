@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
-from pathlib import Path
 import dj_database_url
+from pathlib import Path
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -77,13 +78,13 @@ WSGI_APPLICATION = 'Quiz.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
 DATABASES = {
-    'default': dj_database_url.parse(
-        'postgresql://dhruv:5Y4UwU1mSELGGdLiAs2CbmKds0nE6RTP@dpg-d4a6kabuibrs73c8dd00-a.oregon-postgres.render.com/quiz_onng',
-        conn_max_age=600,
-        ssl_require=True
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
     )
 }
+
 
 
 # Password validation
