@@ -38,4 +38,7 @@ Installation Guide
 
 pip install -r requirements.txt
 
+honestly i have no deep knowledge on fronted full fronted i got by AI so i face some error while calling api 
+i know HTML basic and css normally 
+
 
