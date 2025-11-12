@@ -55,6 +55,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://quizz-1300.onrender.com',
+]
+
 ROOT_URLCONF = 'Quiz.urls'
 
 TEMPLATES = [
